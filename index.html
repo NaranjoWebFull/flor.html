@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Jardín de Lirios para Ti</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        .reproductor {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 12px 18px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn-musica {
+            background: #9b5de5;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-musica:hover {
+            background: #f15bb5;
+        }
+
+        .jardin {
+            position: relative;
+            width: 500px;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .lirio-contenedor {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+        }
+
+        .lirio-centro {
+            transform: scale(1);
+            z-index: 5;
+        }
+
+        .lirio-izq {
+            transform: scale(0.75) rotate(-25deg) translate(-120px, -20px);
+        }
+
+        .lirio-der {
+            transform: scale(0.8) rotate(20deg) translate(120px, -10px);
+        }
+
+        .tallo {
+            width: 8px;
+            height: 180px;
+            background: linear-gradient(to top, #2d6a4f, #52b788);
+            border-radius: 4px;
+        }
+
+        .flor-cabeza {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-bottom: -20px;
+            animation: balanceo 4s ease-in-out infinite alternate;
+        }
+
+        .petalo-lirio {
+            position: absolute;
+            bottom: 20px;
+            left: 35px;
+            width: 30px;
+            height: 80px;
+            background: linear-gradient(to top, #dee2ff, #9b5de5);
+            border-radius: 50%;
+            transform-origin: bottom center;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .lirio-der .petalo-lirio {
+            background: linear-gradient(to top, #ffccd5, #f15bb5);
+        }
+
+        .pl1 { transform: rotate(0deg); }
+        .pl2 { transform: rotate(35deg) scaleX(0.9); }
+        .pl3 { transform: rotate(-35deg) scaleX(0.9); }
+        .pl4 { transform: rotate(70deg) scale(0.8); opacity: 0.8; }
+        .pl5 { transform: rotate(-70deg) scale(0.8); opacity: 0.8; }
+
+        /* Pistilos mejorados */
+        .pistilo-centro {
+            position: absolute;
+            bottom: 20px;
+            left: 48px;
+            width: 4px;
+            height: 45px;
+            background: #fee440;
+            border-radius: 2px;
+            z-index: 10;
+        }
+        .pistilo-izq {
+            position: absolute;
+            bottom: 20px;
+            left: 48px;
+            width: 4px;
+            height: 40px;
+            background: #f7b267;
+            border-radius: 2px;
+            z-index: 10;
+            transform: rotate(-15deg);
+            transform-origin: bottom center;
+        }
+        .pistilo-der {
+            position: absolute;
+            bottom: 20px;
+            left: 48px;
+            width: 4px;
+            height: 40px;
+            background: #f7b267;
+            border-radius: 2px;
+            z-index: 10;
+            transform: rotate(15deg);
+            transform-origin: bottom center;
+        }
+
+        .mensaje {
+            margin-top: 40px;
+            font-size: 1.5rem;
+            color: #4a0e4e;
+            font-weight: bold;
+            text-align: center;
+            max-width: 600px;
+            opacity: 0;
+            animation: aparecer 2.5s ease-in forwards;
+            animation-delay: 1s;
+        }
+
+        @keyframes balanceo {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+
+        @keyframes aparecer {
+            to {
+                opacity: 1;
+                transform: translateY(-15px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="reproductor">
+        <span>🎵 Tú y Yo - La Misma Gente</span>
+        <button class="btn-musica" onclick="controlarMusica()">
+            ▶ Play
+        </button>
+    </div>
+
+    <!-- Se añade el contenedor para la API de YouTube de forma correcta -->
+    <div style="position:absolute; top:-9999px; left:-9999px;">
+        <div id="player"></div>
+    </div>
+
+    <div class="jardin">
+
+        <div class="lirio-contenedor lirio-izq">
+            <div class="flor-cabeza">
+                <div class="pistilo-centro"></div>
+                <div class="pistilo-izq"></div>
+                <div class="pistilo-der"></div>
+                <div class="petalo-lirio pl1"></div>
+                <div class="petalo-lirio pl2"></div>
+                <div class="petalo-lirio pl3"></div>
+                <div class="petalo-lirio pl4"></div>
+                <div class="petalo-lirio pl5"></div>
+            </div>
+            <div class="tallo"></div>
+        </div>
+
+        <div class="lirio-contenedor lirio-centro">
+            <div class="flor-cabeza">
+                <div class="pistilo-centro"></div>
+                <div class="pistilo-izq"></div>
+                <div class="pistilo-der"></div>
+                <div class="petalo-lirio pl1"></div>
+                <div class="petalo-lirio pl2"></div>
+                <div class="petalo-lirio pl3"></div>
+                <div class="petalo-lirio pl4"></div>
+                <div class="petalo-lirio pl5"></div>
+            </div>
+            <div class="tallo"></div>
+        </div>
+
+        <div class="lirio-contenedor lirio-der">
+            <div class="flor-cabeza">
+                <div class="pistilo-centro"></div>
+                <div class="pistilo-izq"></div>
+                <div class="pistilo-der"></div>
+                <div class="petalo-lirio pl1"></div>
+                <div class="petalo-lirio pl2"></div>
+                <div class="petalo-lirio pl3"></div>
+                <div class="petalo-lirio pl4"></div>
+                <div class="petalo-lirio pl5"></div>
+            </div>
+            <div class="tallo"></div>
+        </div>
+
+    </div>
+
+    <div class="mensaje">
+        Los lirios representan pureza y belleza... 💜✨
+    </div>
+
+    <!-- Carga de la API de YouTube -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        let player;
+        let sonando = false;
+
+        // Esta función se ejecuta automáticamente cuando la API de YouTube está lista
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: 'fdOByz040Ic', // ID de "Tú y Yo - La Misma Gente"
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'rel': 0
+                }
+            });
+        }
+
+        function controlarMusica() {
+            const boton = document.querySelector('.btn-musica');
+            
+            if (!player || typeof player.playVideo !== 'function') {
+                console.log("El reproductor aún está cargando...");
+                return;
+            }
+
+            if (!sonando) {
+                player.playVideo();
+                boton.textContent = '⏸ Pause';
+                sonando = true;
+            } else {
+                player.pauseVideo();
+                boton.textContent = '▶ Play';
+                sonando = false;
+            }
+        }
+    </script>
+
+</body>
+</html>
